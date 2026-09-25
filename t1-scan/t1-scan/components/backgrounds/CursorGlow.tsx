@@ -67,11 +67,13 @@ export default function CursorGlow({
       if (!raf) raf = requestAnimationFrame(tick);
     };
 
+    const containerEl = containerRef ? containerRef.current : null;
+
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === "touch") return;
 
-      if (containerRef && containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
+      if (containerEl) {
+        const rect = containerEl.getBoundingClientRect();
         target.x = e.clientX - rect.left;
         target.y = e.clientY - rect.top;
       } else {
@@ -94,19 +96,19 @@ export default function CursorGlow({
       wrap.style.opacity = "0";
     };
 
-    const targetEl = containerRef && containerRef.current ? containerRef.current : window;
-    
+    const targetEl = containerEl ? containerEl : window;
+
     targetEl.addEventListener("pointermove", onMove as EventListener, { passive: true });
-    if (containerRef && containerRef.current) {
-      containerRef.current.addEventListener("pointerleave", onLeave);
+    if (containerEl) {
+      containerEl.addEventListener("pointerleave", onLeave);
     } else {
       document.documentElement.addEventListener("mouseleave", onLeave);
     }
 
     return () => {
       targetEl.removeEventListener("pointermove", onMove as EventListener);
-      if (containerRef && containerRef.current) {
-        containerRef.current.removeEventListener("pointerleave", onLeave);
+      if (containerEl) {
+        containerEl.removeEventListener("pointerleave", onLeave);
       } else {
         document.documentElement.removeEventListener("mouseleave", onLeave);
       }

@@ -10,9 +10,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-brand-gradient text-white shadow-[0_10px_24px_rgba(108,92,231,0.35)] hover:shadow-[0_14px_30px_rgba(108,92,231,0.45)] hover:-translate-y-0.5",
-  dark: "bg-[#0B0A16] text-white hover:bg-[#17152b]",
+  dark: "bg-[#0B0A16] dark:bg-white text-white dark:text-[#0B0A16] hover:bg-[#17152b] dark:hover:bg-slate-100 shadow-sm",
   ghost:
-    "bg-white text-ink border border-[rgba(31,27,58,0.12)] hover:border-[rgba(31,27,58,0.25)]",
+    "bg-white dark:bg-white/[0.06] text-ink dark:text-slate-200 border border-[rgba(31,27,58,0.12)] dark:border-white/15 hover:border-[rgba(31,27,58,0.25)] dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/[0.1]",
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -33,3 +33,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button };
+

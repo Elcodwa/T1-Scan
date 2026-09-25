@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <main className="relative min-h-screen bg-white">
+    <main className="relative min-h-screen bg-white dark:bg-[#0B0A16] transition-colors duration-300">
       <Navbar />
       <div className="relative overflow-hidden py-12 px-4 sm:px-6 lg:py-16">
         <HeroGlow />

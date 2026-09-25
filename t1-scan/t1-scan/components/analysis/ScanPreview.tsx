@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import type { CSSProperties } from "react";
 import styles from "./ScanPreview.module.css";
+import { useLanguage } from "@/lib/i18n";
+
 
 /**
  * ScanPreview
@@ -22,7 +24,7 @@ import styles from "./ScanPreview.module.css";
  * (#22C55E / #13A85B) for visibility.
  */
 
-export interface MetricItem {
+interface MetricItem {
   id: string;
   title: string;
   value: number;
@@ -38,42 +40,11 @@ export interface MetricItem {
   lines: string[];
 }
 
-const DEFAULT_METRICS: MetricItem[] = [
-  {
-    id: "ratio",
-    title: "Mean facial ratio",
-    value: 0.96,
-    min: 0.8,
-    max: 1.2,
-    decimals: 2,
-    suffix: "x",
-    ticks: ["0.80x", "1.0x", "1.20x"],
-    badge: "Optimal · 9",
-    stroke: "#22C55E", // brightened from source #23A55A for visibility
-    // Exact source #scan coordinates (0-100 viewBox space)
-    lines: [
-      "M37.5 51.5 L60.5 51.5", // pupil to pupil
-      "M49 51.5 L49 74", // vertical down to the upper lip
-    ],
-  },
-  {
-    id: "alar",
-    title: "Alar-mandibular deviation",
-    value: 1.4,
-    min: -2.5,
-    max: 5.0,
-    decimals: 1,
-    suffix: "°",
-    ticks: ["-2.5°", "0°–2.5°", "5.0°"],
-    badge: "Ideal · 9.8",
-    stroke: "#13A85B", // brightened from source #0F8A4C for visibility
-    // Exact source #scan coordinates (0-100 viewBox space)
-    lines: [
-      "M32 51 L48.8 68.5 L66 51.5", // upper V — eyes to nasal base
-      "M30 80 L49.5 96 L70.5 77.5", // lower V — jaw to chin
-    ],
-  },
-];
+/**
+ * Default metrics are built inside the component so their labels follow the
+ * active language (see `localizedDefaultMetrics`).
+ */
+
 
 interface MetricProps {
   m: MetricItem;
@@ -131,7 +102,7 @@ function Metric({ m, active, onActivate, onDeactivate }: MetricProps) {
   );
 }
 
-export interface ScanPreviewProps {
+interface ScanPreviewProps {
   imageSrc?: string | StaticImageData;
   imageAlt?: string;
   score?: number;
@@ -141,23 +112,61 @@ export interface ScanPreviewProps {
 
 export default function ScanPreview({
   imageSrc,
-  imageAlt = "Analyzed face",
+  imageAlt,
   score = 9.4,
-  metrics = DEFAULT_METRICS,
+  metrics,
   className,
 }: ScanPreviewProps) {
   const [activeId, setActiveId] = useState<string | null>("ratio");
+  const { t } = useLanguage();
+
+  const localizedDefaultMetrics: MetricItem[] = [
+    {
+      id: "ratio",
+      title: t.analysisPreview.ratioTitle,
+      value: 0.96,
+      min: 0.8,
+      max: 1.2,
+      decimals: 2,
+      suffix: "x",
+      ticks: ["0.80x", "1.0x", "1.20x"],
+      badge: t.analysisPreview.ratioBadge,
+      stroke: "#22C55E",
+      lines: [
+        "M37.5 51.5 L60.5 51.5",
+        "M49 51.5 L49 74",
+      ],
+    },
+    {
+      id: "alar",
+      title: t.analysisPreview.alarTitle,
+      value: 1.4,
+      min: -2.5,
+      max: 5.0,
+      decimals: 1,
+      suffix: "°",
+      ticks: ["-2.5°", "0°–2.5°", "5.0°"],
+      badge: t.analysisPreview.alarBadge,
+      stroke: "#13A85B",
+      lines: [
+        "M32 51 L48.8 68.5 L66 51.5",
+        "M30 80 L49.5 96 L70.5 77.5",
+      ],
+    },
+  ];
+
+  const effectiveMetrics = metrics ?? localizedDefaultMetrics;
 
   return (
     <section
       className={`${styles.spRoot}${className ? ` ${className}` : ""}`}
-      aria-label="Face scan preview"
+      aria-label={t.analysisPreview.previewLabel}
     >
       <figure className={styles.spFace}>
         {imageSrc ? (
           <Image
             src={imageSrc}
-            alt={imageAlt}
+            alt={imageAlt ?? t.analysisPreview.imageAlt}
             width={320}
             height={320}
             priority
@@ -172,7 +181,7 @@ export default function ScanPreview({
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          {metrics.map((m) => (
+          {effectiveMetrics.map((m) => (
             <g
               key={m.id}
               className={`${styles.spLines}${activeId === m.id ? ` ${styles.isActive}` : ""}`}
@@ -192,17 +201,17 @@ export default function ScanPreview({
         <header className={styles.spHead}>
           <span className={styles.spStatus}>
             <i className={styles.spDot} />
-            Analysis complete
+            {t.analysisPreview.status}
           </span>
           <div className={styles.spScore}>
             <strong>{score.toFixed(1)}</strong>
             <span>/10</span>
-            <small>Overall harmony</small>
+            <small>{t.analysisPreview.overallHarmony}</small>
           </div>
         </header>
 
         <div className={styles.spMetrics}>
-          {metrics.map((m) => (
+          {effectiveMetrics.map((m) => (
             <Metric
               key={m.id}
               m={m}
@@ -216,6 +225,8 @@ export default function ScanPreview({
     </section>
   );
 }
+
+
 
 
 

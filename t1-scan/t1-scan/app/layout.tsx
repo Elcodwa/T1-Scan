@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,8 +22,6 @@ export const metadata: Metadata = {
     "dimorphism score",
   ],
   authors: [{ name: "T1-Scan" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
-  themeColor: "#0B0A16",
   openGraph: {
     title: "T1-Scan — Precision Facial Analysis",
     description:
@@ -38,14 +37,47 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0B0A16",
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var storedTheme = localStorage.getItem('t1_theme');
+                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (storedTheme === 'dark' || (!storedTheme && supportDarkMode)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                  var storedLang = localStorage.getItem('t1_lang');
+                  if (storedLang) {
+                    document.documentElement.lang = storedLang;
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased bg-white dark:bg-[#0B0A16] text-ink dark:text-[#f1f0f7] transition-colors duration-300">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
+

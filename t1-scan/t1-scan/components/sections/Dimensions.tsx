@@ -1,37 +1,38 @@
-import { DnaBackground } from "@/components/backgrounds/DnaBackground";
+"use client";
 
-const dimensions = [
-  {
-    name: "Harmony",
-    dot: "#22C55E",
-    description:
-      "Golden ratio, facial thirds and fifths, and proportional balance from precise anatomical landmark measurements.",
-    highlight: false,
-  },
-  {
-    name: "Traits",
-    dot: "#6C5CE7",
-    description:
-      "Skin, hair, eyes, nose, jawline, lips, brow structure, and more — each feature scored individually.",
-    highlight: false,
-  },
-  {
-    name: "Angularity",
-    dot: "#3B82F6",
-    description:
-      "Eye depth, jaw definition, cheekbone sharpness, chin shape, and overall facial angularity.",
-    highlight: false,
-  },
-  {
-    name: "Dimorphism",
-    dot: "#E8558C",
-    description:
-      "Visual dimorphism markers scored from ratios: coloring, brow density, and jaw shape and structure.",
-    highlight: true,
-  },
-];
+import { DnaBackground } from "@/components/backgrounds/DnaBackground";
+import { useLanguage } from "@/lib/i18n";
 
 export function Dimensions() {
+  const { t } = useLanguage();
+
+  const dimensions = [
+    {
+      name: t.dimensions.harmonyTitle,
+      dot: "#22C55E",
+      description: t.dimensions.harmonyDesc,
+      highlight: false,
+    },
+    {
+      name: t.dimensions.traitsTitle,
+      dot: "#6C5CE7",
+      description: t.dimensions.traitsDesc,
+      highlight: false,
+    },
+    {
+      name: t.dimensions.angularityTitle,
+      dot: "#3B82F6",
+      description: t.dimensions.angularityDesc,
+      highlight: false,
+    },
+    {
+      name: t.dimensions.dimorphismTitle,
+      dot: "#E8558C",
+      description: t.dimensions.dimorphismDesc,
+      highlight: true,
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden px-6 py-20 lg:py-28">
       <DnaBackground
@@ -43,10 +44,10 @@ export function Dimensions() {
       />
 
       <div className="relative z-10 mx-auto max-w-4xl">
-        <h2 className="text-center text-[32px] font-extrabold tracking-tight text-ink sm:text-[38px]">
-          Four dimensions.{" "}
+        <h2 className="text-center text-[32px] font-extrabold tracking-tight text-ink dark:text-white sm:text-[38px] transition-colors">
+          {t.dimensions.titlePre}
           <span className="bg-brand-gradient bg-clip-text text-transparent">
-            One complete picture.
+            {t.dimensions.titleGradient}
           </span>
         </h2>
 
@@ -54,10 +55,10 @@ export function Dimensions() {
           {dimensions.map((d) => (
             <div
               key={d.name}
-              className={`rounded-2xl border bg-white p-6 text-left shadow-card-soft ${
+              className={`rounded-2xl border bg-white/90 dark:bg-white/[0.04] p-6 text-left shadow-card-soft dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 ${
                 d.highlight
-                  ? "border-[#E8558C]/60"
-                  : "border-[rgba(31,27,58,0.08)]"
+                  ? "border-[#E8558C]/60 dark:border-[#E8558C]/80"
+                  : "border-[rgba(31,27,58,0.08)] dark:border-white/10"
               }`}
             >
               <div className="mb-3 flex items-center gap-2.5">
@@ -65,11 +66,11 @@ export function Dimensions() {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ background: d.dot }}
                 />
-                <span className="text-[17px] font-semibold text-ink">
+                <span className="text-[17px] font-semibold text-ink dark:text-white transition-colors">
                   {d.name}
                 </span>
               </div>
-              <p className="text-[14.5px] leading-relaxed text-ink-muted">
+              <p className="text-[14.5px] leading-relaxed text-ink-muted dark:text-slate-300 transition-colors">
                 {d.description}
               </p>
             </div>
@@ -79,3 +80,4 @@ export function Dimensions() {
     </section>
   );
 }
+

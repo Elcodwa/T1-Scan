@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { PricingTable, PlanId } from "./PricingTable";
+import { useLanguage } from "@/lib/i18n";
 
 interface PricingModalProps {
   isOpen: boolean;
@@ -11,6 +12,8 @@ interface PricingModalProps {
 }
 
 export function PricingModal({ isOpen, onClose, onSelectPlan }: PricingModalProps) {
+  const { t } = useLanguage();
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -42,8 +45,9 @@ export function PricingModal({ isOpen, onClose, onSelectPlan }: PricingModalProp
       <div className="relative z-10 w-full max-w-4xl my-auto animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
-          aria-label="Close modal"
-          className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-ink shadow-md backdrop-blur-md transition-all hover:bg-white hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500"
+          aria-label={t.modal.closeLabel}
+          title={t.modal.closeLabel}
+          className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 dark:bg-white/10 text-ink dark:text-slate-100 shadow-md backdrop-blur-md transition-all hover:bg-white dark:hover:bg-white/20 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500"
         >
           <X className="h-5 w-5" />
         </button>

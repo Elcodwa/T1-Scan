@@ -9,11 +9,22 @@ html {
 body {
   color: #1f1b3a;
   background: #ffffff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark body {
+  color: #f1f0f7;
+  background: #0B0A16;
 }
 
 ::selection {
   background: #ded7fa;
   color: #1f1b3a;
+}
+
+html.dark ::selection {
+  background: #6C5CE7;
+  color: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -26,3 +37,4 @@ body {
     scroll-behavior: auto !important;
   }
 }
+

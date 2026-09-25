@@ -4,21 +4,25 @@ import { useRef } from "react";
 import { Check, X, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CursorGlow from "@/components/backgrounds/CursorGlow";
+import { useLanguage } from "@/lib/i18n";
 
+/**
+ * Structural data only: display strings live in `lib/i18n.tsx` so the table can
+ * be rendered in any supported language.
+ */
+const featuresList = [
+  { key: "harmony", basic: true, completo: true, premium: true },
+  { key: "traits", basic: false, completo: true, premium: true },
+  { key: "angularity", basic: false, completo: true, premium: true },
+  { key: "dimorphism", basic: false, completo: true, premium: true },
+  { key: "fullReport", basic: true, completo: true, premium: true },
+  { key: "multipleScans", basic: false, completo: false, premium: true },
+] as const;
 
-export const featuresList = [
-  { name: "Harmony", basic: true, completo: true, premium: true },
-  { name: "Traits", basic: false, completo: true, premium: true },
-  { name: "Angularity", basic: false, completo: true, premium: true },
-  { name: "Dimorphism", basic: false, completo: true, premium: true },
-  { name: "Full Score Report", basic: true, completo: true, premium: true },
-  { name: "Multiple Scans", basic: false, completo: false, premium: true },
-];
-
-export const plans = [
-  { id: "basic", name: "Basic", price: "$2.99", subtext: "One-time payment" },
-  { id: "completo", name: "Complete", badge: "Popular", price: "$6.99", subtext: "One-time payment" },
-  { id: "premium", name: "Premium", price: "$11.99", subtext: "Monthly" },
+const plans = [
+  { id: "basic", price: "$2.99" },
+  { id: "completo", badge: true, price: "$6.99" },
+  { id: "premium", price: "$11.99" },
 ] as const;
 
 export type PlanId = (typeof plans)[number]["id"];
@@ -38,6 +42,22 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
+
+  const localizedPlans = plans.map((p) => ({
+    ...p,
+    name: t.pricing.plans[p.id].name,
+    subtext: t.pricing.plans[p.id].subtext,
+    badge: "badge" in p ? t.pricing.badgePopular : undefined,
+  }));
+
+  const localizedFeatures = featuresList.map((f) => ({
+    key: f.key,
+    name: t.pricing.features[f.key],
+    basic: f.basic,
+    completo: f.completo,
+    premium: f.premium,
+  }));
 
   // The spotlight is written straight to the DOM instead of living in React
   // state: re-rendering the ~40 cells of this grid on every mouseenter is what
@@ -53,9 +73,11 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
     if (!surface) return null;
     const rect = surface.getBoundingClientRect();
     if (!rect.width) return null;
-    const t = (clientX - rect.left) / rect.width;
-    if (t < COLUMN_RATIO) return null;
-    const index = Math.min(PLAN_IDS.length - 1, Math.floor((t - COLUMN_RATIO) / COLUMN_RATIO));
+    // Local pointer position across the surface (0..1) — named `pos` so it does
+    // not shadow the `t` translation object from useLanguage().
+    const pos = (clientX - rect.left) / rect.width;
+    if (pos < COLUMN_RATIO) return null;
+    const index = Math.min(PLAN_IDS.length - 1, Math.floor((pos - COLUMN_RATIO) / COLUMN_RATIO));
     return PLAN_IDS[index];
   };
 
@@ -103,7 +125,7 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
       <div
         ref={containerRef}
         data-active={DEFAULT_PLAN}
-        className="pt-root relative overflow-hidden rounded-[32px] border border-violet-200/80 bg-[#C8C0EC] p-6 shadow-[0_24px_50px_rgba(108,92,231,0.18)] sm:p-10"
+        className="pt-root relative overflow-hidden rounded-[32px] border border-violet-200/80 dark:border-white/10 bg-[#C8C0EC] dark:bg-[#191630] p-6 shadow-[0_24px_50px_rgba(108,92,231,0.18)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.5)] sm:p-10 transition-colors duration-300"
       >
         {/* Subtle grid pattern */}
         <div 
@@ -130,11 +152,11 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
         <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#6C5CE7]/20 blur-3xl" />
 
         <div className="relative z-10 text-center">
-          <h2 className="text-[28px] font-extrabold tracking-tight text-ink sm:text-[38px]">
-            Ready to see your score?
+          <h2 className="text-[28px] font-extrabold tracking-tight text-ink dark:text-white transition-colors sm:text-[38px]">
+            {t.pricing.title}
           </h2>
-          <p className="mx-auto mt-2 text-[15px] font-medium text-ink-soft/80">
-            Choose the analysis level for your complete precision facial report.
+          <p className="mx-auto mt-2 text-[15px] font-medium text-ink-soft/80 dark:text-slate-300 transition-colors">
+            {t.pricing.subtitle}
           </p>
         </div>
 
@@ -151,14 +173,14 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
           >
             <div className="grid grid-cols-4 items-end pb-4 pt-2">
               <div className="px-3" />
-              {plans.map((p) => (
+              {localizedPlans.map((p) => (
                 <div key={p.id} data-plan={p.id} className="cursor-pointer text-center">
                   {"badge" in p && p.badge && (
                     <span className="mb-1 inline-block rounded-full bg-brand-gradient px-2.5 py-0.5 text-[11px] font-bold text-white shadow-sm">
                       {p.badge}
                     </span>
                   )}
-                  <div className="pt-name text-[22px] font-extrabold text-ink">{p.name}</div>
+                  <div className="pt-name text-[22px] font-extrabold text-ink dark:text-white">{p.name}</div>
                 </div>
               ))}
             </div>
@@ -166,20 +188,20 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
             {/* No backdrop-blur here: the box covers the CursorGlow, so a
                 backdrop-filter would re-blur a moving animated backdrop every
                 single frame while the pointer travels across the table. */}
-            <div className="relative rounded-2xl border border-violet-300/40 bg-violet-100/30 p-2 shadow-inner">
+            <div className="relative rounded-2xl border border-violet-300/40 dark:border-white/10 bg-violet-100/30 dark:bg-white/[0.03] p-2 shadow-inner transition-colors">
               {/* Ultra smooth sliding spotlight highlight */}
               <div className="pointer-events-none absolute inset-y-2 left-[25%] right-2">
                 <div
                   ref={highlightRef}
                   aria-hidden="true"
-                  className="pt-highlight h-full w-1/3 rounded-2xl bg-white shadow-[0_10px_30px_rgba(108,92,231,0.22)] ring-2 ring-violet-500/40 will-change-transform transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  className="pt-highlight h-full w-1/3 rounded-2xl bg-white dark:bg-white/[0.1] shadow-[0_10px_30px_rgba(108,92,231,0.22)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] ring-2 ring-violet-500/40 will-change-transform transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 />
               </div>
 
-              <div className="relative z-10 divide-y divide-violet-200/50">
-                {featuresList.map((f) => (
-                  <div key={f.name} className="grid grid-cols-4 items-center py-3.5 transition-colors">
-                    <div className="px-4 text-left font-semibold text-ink">{f.name}</div>
+              <div className="relative z-10 divide-y divide-violet-200/50 dark:divide-white/10">
+                {localizedFeatures.map((f) => (
+                  <div key={f.key} className="grid grid-cols-4 items-center py-3.5 transition-colors">
+                    <div className="px-4 text-left font-semibold text-ink dark:text-white transition-colors">{f.name}</div>
                     {PLAN_IDS.map((id) => (
                       <div
                         key={id}
@@ -187,11 +209,11 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
                         className="flex cursor-pointer items-center justify-center py-1"
                       >
                         {f[id] ? (
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-sm transition-transform hover:scale-110">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 shadow-sm transition-transform hover:scale-110">
                             <Check className="h-4 w-4 stroke-[2.8]" />
                           </div>
                         ) : (
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-rose-50 text-rose-400 opacity-70">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-400 opacity-70">
                             <X className="h-4 w-4 stroke-[2.4]" />
                           </div>
                         )}
@@ -202,14 +224,14 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
               </div>
 
 
-              <div className="relative z-10 grid grid-cols-4 items-center border-t border-violet-200/60 pb-3 pt-5">
-                <div className="px-4 text-left text-xs font-bold uppercase tracking-wider text-ink-muted">
-                  Price
+              <div className="relative z-10 grid grid-cols-4 items-center border-t border-violet-200/60 dark:border-white/10 pb-3 pt-5">
+                <div className="px-4 text-left text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-slate-400">
+                  {t.pricing.priceLabel}
                 </div>
-                {plans.map((p) => (
+                {localizedPlans.map((p) => (
                   <div key={`price-${p.id}`} data-plan={p.id} className="cursor-pointer text-center">
-                    <div className="pt-price text-[21px] font-black tracking-tight text-ink">{p.price}</div>
-                    <div className="pt-sub text-[12px] font-semibold text-ink-muted">{p.subtext}</div>
+                    <div className="pt-price text-[21px] font-black tracking-tight text-ink dark:text-white">{p.price}</div>
+                    <div className="pt-sub text-[12px] font-semibold text-ink-muted dark:text-slate-400">{p.subtext}</div>
                   </div>
                 ))}
               </div>
@@ -222,18 +244,18 @@ export function PricingTable({ onSelect, className = "" }: PricingTableProps) {
             onClick={() => handleChoose(activeRef.current)}
             className="h-12 rounded-full bg-brand-gradient px-12 py-3 text-[16px] font-bold text-white shadow-[0_10px_28px_rgba(108,92,231,0.38)] transition-all hover:scale-105 hover:shadow-[0_14px_34px_rgba(108,92,231,0.48)]"
           >
-            Choose your plan
+            {t.pricing.chooseButton}
             <ArrowRight className="h-4 w-4" />
           </Button>
-          <div className="flex items-center gap-4 text-xs font-medium text-ink-soft/75">
+          <div className="flex items-center gap-4 text-xs font-medium text-ink-soft/75 dark:text-slate-300">
             <span className="inline-flex items-center gap-1">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-              Secure payment
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              {t.pricing.securePayment}
             </span>
             <span>•</span>
             <span className="inline-flex items-center gap-1">
-              <Zap className="h-3.5 w-3.5 text-violet-600" />
-              Instant results
+              <Zap className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+              {t.pricing.instantResults}
             </span>
           </div>
         </div>
@@ -270,6 +292,21 @@ const TABLE_CSS = `
 .pt-root[data-active="completo"] [data-plan="completo"] .pt-sub,
 .pt-root[data-active="premium"] [data-plan="premium"] .pt-sub {
   color: #7c3aed;
+}
+/* Dark theme: the violet-700/#7c3aed pair is unreadable on the dark card, so
+   the spotlight uses the lighter violet scale instead. */
+.dark .pt-root[data-active="basic"] [data-plan="basic"] .pt-name,
+.dark .pt-root[data-active="completo"] [data-plan="completo"] .pt-name,
+.dark .pt-root[data-active="premium"] [data-plan="premium"] .pt-name,
+.dark .pt-root[data-active="basic"] [data-plan="basic"] .pt-price,
+.dark .pt-root[data-active="completo"] [data-plan="completo"] .pt-price,
+.dark .pt-root[data-active="premium"] [data-plan="premium"] .pt-price {
+  color: #c4b5fd;
+}
+.dark .pt-root[data-active="basic"] [data-plan="basic"] .pt-sub,
+.dark .pt-root[data-active="completo"] [data-plan="completo"] .pt-sub,
+.dark .pt-root[data-active="premium"] [data-plan="premium"] .pt-sub {
+  color: #a78bfa;
 }
 `;
 
