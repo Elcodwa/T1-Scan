@@ -6,11 +6,7 @@ import { Button } from "@/components/ui/button";
 import CursorGlow from "@/components/backgrounds/CursorGlow";
 import { useLanguage } from "@/lib/i18n";
 
-interface CtaBannerProps {
-  onScanClick?: () => void;
-}
-
-export function CtaBanner({ onScanClick }: CtaBannerProps) {
+export function CtaBanner() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
 
@@ -111,7 +107,7 @@ export function CtaBanner({ onScanClick }: CtaBannerProps) {
           {/* Action Footer */}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 text-center sm:flex-row">
             <Button
-              onClick={onScanClick}
+              href="/analysis"
               className="h-12 px-8 text-base font-semibold shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               {t.ctaBanner.button}

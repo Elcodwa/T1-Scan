@@ -7,11 +7,7 @@ import { useTheme } from "@/lib/theme";
 import { useLanguage } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 
-interface NavbarProps {
-  onScanClick?: () => void;
-}
-
-export function Navbar({ onScanClick }: NavbarProps) {
+export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
@@ -90,7 +86,7 @@ export function Navbar({ onScanClick }: NavbarProps) {
           </Link>
 
           <Button
-            onClick={onScanClick}
+            href="/analysis"
             variant="dark"
             className="px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm"
           >

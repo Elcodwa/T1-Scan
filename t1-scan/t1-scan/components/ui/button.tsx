@@ -1,10 +1,17 @@
 import * as React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "dark" | "ghost";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  /**
+   * When set the button renders as a Next.js <Link> (an <a>) with the same
+   * styling, instead of a <button>. Used by the "Scan my face" CTAs so they
+   * navigate to the analysis workspace.
+   */
+  href?: string;
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -16,18 +23,22 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500",
-          variantClasses[variant],
-          className
-        )}
-        {...props}
-      />
+  ({ className, variant = "primary", href, ...props }, ref) => {
+    const classes = cn(
+      "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500",
+      variantClasses[variant],
+      className
     );
+
+    if (href) {
+      return (
+        <Link href={href} className={classes}>
+          {props.children}
+        </Link>
+      );
+    }
+
+    return <button ref={ref} className={classes} {...props} />;
   }
 );
 Button.displayName = "Button";

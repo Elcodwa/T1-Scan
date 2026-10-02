@@ -6,11 +6,7 @@ import { Button } from "@/components/ui/button";
 import { HeroGlow } from "@/components/backgrounds/HeroGlow";
 import { useLanguage } from "@/lib/i18n";
 
-interface HeroProps {
-  onScanClick?: () => void;
-}
-
-export function Hero({ onScanClick }: HeroProps) {
+export function Hero() {
   const { t } = useLanguage();
 
   return (
@@ -37,7 +33,7 @@ export function Hero({ onScanClick }: HeroProps) {
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <Button onClick={onScanClick}>
+          <Button href="/analysis">
             {t.hero.ctaPrimary}
             <ArrowRight className="h-4 w-4" />
           </Button>
