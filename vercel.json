@@ -1,5 +1,4 @@
 {
-  "framework": "nextjs",
-  "rootDirectory": "t1-scan/t1-scan",
-  "buildCommand": "next build"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs"
 }
