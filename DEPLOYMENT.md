@@ -37,10 +37,9 @@ git push -u origin main
 ### Option A: Via Vercel Web Dashboard (Recommended)
 1. Go to [vercel.com](https://vercel.com) and log in.
 2. Click **Add New Project** and select your GitHub repository.
-3. Set the **Root Directory** to `t1-scan/t1-scan` (Project Settings → Build & Deployment
-   → Root Directory → Edit). This must be set in the Vercel dashboard — `rootDirectory`
-   is not a valid `vercel.json` property and Vercel rejects it with
-   *"should NOT have additional property `rootDirectory`"*.
+3. Leave **Root Directory** at its default (the repository root). The Next.js app,
+   including its `package.json`, now lives at the root of the repository, so no
+   Root Directory override is needed.
 4. Confirm the framework is detected as **Next.js** and leave the build/install commands on their defaults.
 5. Click **Deploy**. Vercel will build and deploy your project automatically with Next.js edge caching and global CDN.
 

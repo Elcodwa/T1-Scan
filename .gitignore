@@ -8,6 +8,6 @@ dev.log
 nul
 *.log
 *.zip
-t1-scan/t1-scan/node_modules/
-t1-scan/t1-scan/.next/
-t1-scan/t1-scan/*.log
+
+# Generated build artifact
+tsconfig.tsbuildinfo
